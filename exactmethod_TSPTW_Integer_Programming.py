@@ -1,7 +1,35 @@
 from ortools.linear_solver import pywraplp
 from timeit import default_timer
+import sys
 
 BIG_M = 9999999
+
+def read_input_from_file(filename):
+    '''
+    This function reads an input file for the TSPTW problem.
+    If successful, this returns a tuple (N, e, l, d, t) where:
+        + N is the number of points to visit
+        + e and l contain the starts and ends of N time windows
+        + d is the service times at N points
+        + t is the travel time matrix, size (N+1) x (N+1)
+    '''
+    try:
+        with open(filename, 'r') as file_handle:
+            content = file_handle.read().split('\n')
+            N = int(content[0])
+            e, l, d = [0 for _ in range(N)], [0 for _ in range(N)], [0 for _ in range(N)]
+            t = []
+            for i in range(N):
+                e[i], l[i], d[i] = map(int, content[i+1].split())
+            for i in range(N+1):
+                t.append(list(map(int, content[i+N+1].split())))
+            return (N, e, l, d, t)
+    except FileNotFoundError:
+        return None
+    except:
+        print('Unknown error when reading file!')
+        return None
+
 
 def solve(problem_inputs):
     n, e, l, d, t = problem_inputs
@@ -83,19 +111,23 @@ def solve(problem_inputs):
     return TSP_path
 
 if __name__ == "__main__":
-    # Đọc input từ đề bài
-    n = int(input())
-    e, l, d = [], [], []
-    for _ in range(n):
-        ei, li, di = map(int, input().split())
-        e.append(ei)
-        l.append(li)
-        d.append(di)
-    
-    t = []
-    for _ in range(n + 1):
-        t.append(list(map(int, input().split())))
-    
-    TSP_path = solve((n, e, l, d, t))
+    if len(sys.argv) > 1:
+        data = read_input_from_file(sys.argv[1])
+    else:
+        # Đọc input từ đề bài
+        n = int(input())
+        e, l, d = [], [], []
+        for _ in range(n):
+            ei, li, di = map(int, input().split())
+            e.append(ei)
+            l.append(li)
+            d.append(di)
+
+        t = []
+        for _ in range(n + 1):
+            t.append(list(map(int, input().split())))
+        data = (n,e,l,d,t)
+
+    TSP_path = solve(data)
     if len(TSP_path) == 0:
         print("Không tìm thấy giải pháp khả thi.")

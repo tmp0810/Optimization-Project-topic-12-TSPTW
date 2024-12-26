@@ -1,4 +1,5 @@
 from ortools.sat.python import cp_model
+import sys
 
 # Lớp dùng để in các giải pháp tạm thời
 class Printer(cp_model.CpSolverSolutionCallback):
@@ -123,7 +124,7 @@ def solve_problem(n, s, e, d, t):
         return 'None', 'None', 'None'
 
 # Nhập dữ liệu và giải bài toán
-num, start, end, service, matrix = input_data()
+num, start, end, service, matrix = load_file(sys.argv[1])
 result_path, cost, exec_time = solve_problem(num, start, end, service, matrix)
 print(num)  # In số lượng điểm
 print(*result_path)  # In đường đi

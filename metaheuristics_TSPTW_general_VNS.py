@@ -1,6 +1,33 @@
-
 import random
 import time
+import sys
+
+def read_input_from_file(filename):
+    '''
+    This function reads an input file for the TSPTW problem.
+    If successful, this returns a tuple (N, e, l, d, t) where:
+        + N is the number of points to visit
+        + e and l contain the starts and ends of N time windows
+        + d is the service times at N points
+        + t is the travel time matrix, size (N+1) x (N+1)
+    '''
+    try:
+        with open(filename, 'r') as file_handle:
+            content = file_handle.read().split('\n')
+            N = int(content[0])
+            e, l, d = [0 for _ in range(N)], [0 for _ in range(N)], [0 for _ in range(N)]
+            t = []
+            for i in range(N):
+                e[i], l[i], d[i] = map(int, content[i+1].split())
+            for i in range(N+1):
+                t.append(list(map(int, content[i+N+1].split())))
+            return (N, e, l, d, t)
+    except FileNotFoundError:
+        return None
+    except:
+        print('Unknown error when reading file!')
+        return None
+
 
 def TSPTW_cost(input:tuple, path:list, return_to_0=False):
     N, e, l, d, t = input
@@ -16,13 +43,13 @@ def TSPTW_cost(input:tuple, path:list, return_to_0=False):
         travel_cost += t[path[i]][path[i+1]]
         if total_time > l[path[i+1]]:
             return None
-        
+
     if return_to_0:
         travel_cost += t[path[-1]][0]
     return travel_cost
 
 def inp():
-    N = int(input()) # number of customers, not including starting point 
+    N = int(input()) # number of customers, not including starting point
     e = []
     l = []
     d = []
@@ -172,13 +199,13 @@ class Solver:
   def VNS(self, level_max, iterMax):
     x = sorted(list(range(1,self.N+1)), key = lambda i: self.l[i])
     iter = 0
-    while not (self.CheckFeasible(x) or iter > iterMax):   
+    while not (self.CheckFeasible(x) or iter > iterMax):
       x = self.Solve_VNS(level_max, iterMax)
       iter += 1
     if not self.CheckFeasible(x):
       x = sorted(list(range(1,N+1)), key = lambda i: self.e[i])
       iter = 0
-      while not (self.CheckFeasible(x) or iter > iterMax):   
+      while not (self.CheckFeasible(x) or iter > iterMax):
         x = self.Solve_VNS(level_max, iterMax)
         iter += 1
     return x
@@ -236,7 +263,7 @@ class Solver:
                   check = (compatible[x[position-1]][i]  and compatible[i][x[position]] and compatible[x[i_pos -1]][x[i_pos+1]])
               else:
                 if i_pos == N-1:
-                  delta = - t[x[i_pos-1]][i] + t[i][x[position]] 
+                  delta = - t[x[i_pos-1]][i] + t[i][x[position]]
                   check = compatible[i][x[position]]
                 else:
                   delta = - t[x[i_pos-1]][i] - t[i][x[i_pos+1]] + t[i][x[position]] + t[x[i_pos -1]][x[i_pos+1]]
@@ -288,7 +315,7 @@ class Solver:
                   check = (compatible[x[position-1]][i]  and compatible[i][x[position]] and compatible[x[i_pos -1]][x[i_pos+1]])
               else:
                 if i_pos == N-1:
-                  delta = 0 - t[x[i_pos-1]][i] + t[i][x[position]] 
+                  delta = 0 - t[x[i_pos-1]][i] + t[i][x[position]]
                   check = compatible[i][x[position]]
                 else:
                   delta = 0 - t[x[i_pos-1]][i] - t[i][x[i_pos+1]] + t[i][x[position]] + t[x[i_pos -1]][x[i_pos+1]]
@@ -328,10 +355,10 @@ class Solver:
               if self.CheckFeasible(neighbor):
                   return neighbor
       return x.copy()
-              
+
   def Local2Opt(self, x):
       x_copy = x.copy()
-      n = self.N  
+      n = self.N
       compatible = self.compatible
       t = self.t
       for i in range(n - 1):
@@ -383,7 +410,10 @@ class Solver:
         return x, self.ObjFunc(x), runtime
 
 if __name__ == '__main__':
-  N, e, l, d, t =inp()
+  if len(sys.argv) > 1:
+    N, e, l, d, t = read_input_from_file(sys.argv[1])
+  else:
+    N, e, l, d, t = inp()
   s = Solver(N, e, l, d, t)
   if N < 300:
     levelMax, iterMax, maxTime = 8, 30, 180

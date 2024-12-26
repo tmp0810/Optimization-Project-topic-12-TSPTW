@@ -1,11 +1,11 @@
-#PYTHON 
+from __future__ import annotations
 import random
 import numpy as np
 import time
-from __future__ import annotations
 from collections import deque
 from typing import List, Tuple
 import sys
+
 BIG_COST = 9999999999999
 PHEROMONE_MAX = 0.99
 PHEROMONE_MIN = 0.01
@@ -13,31 +13,83 @@ PHEROMONE_MIN = 0.01
 def read_input_file():
     # Read the number of customers
     n = int(input().strip())
-    
+
     # Initialize lists for e, l, and d
     e, l, d = [], [], []
-    
+
     # Read the e, l, d values for each customer
     for i in range(n):
         ei, li, di = map(int, input().split())
         e.append(ei)
         l.append(li)
         d.append(di)
-    
+
     # Initialize a matrix for t (travel times between points)
     t = []
-    
+
     # Read the travel time matrix t
     for i in range(n + 1):
         t_row = list(map(int, input().split()))
         t.append(t_row)
-    
+
     # Return the parsed values
     return n, e, l, d, t
 
+def read_input_from_file(filename='TSPTW_test_1.txt'):
+    '''
+    This function reads an input file for the TSPTW problem.
+    If successful, this returns a tuple (N, e, l, d, t) where:
+        + N is the number of points to visit
+        + e and l contain the starts and ends of N time windows
+        + d is the service times at N points
+        + t is the travel time matrix, size (N+1) x (N+1)
+    '''
+    try:
+        with open(filename, 'r') as file_handle:
+            # Read all lines from the file and strip whitespace
+            content = [line.strip() for line in file_handle.readlines() if line.strip()]
 
-n, e, l, d, t = read_input_file()
+            # Ensure there is at least one line for the number of points
+            if not content:
+                raise ValueError("Input file is empty or not formatted correctly.")
 
+            # Read the number of points (N)
+            N = int(content[0])
+
+            # Initialize lists for e, l, and d
+            e, l, d = [], [], []
+
+            # Parse the time window and service time data for N points
+            for i in range(1, N + 1):
+                ei, li, di = map(int, content[i].split())
+                e.append(ei)
+                l.append(li)
+                d.append(di)
+
+            # Parse the travel time matrix (N+1 x N+1)
+            t = []
+            for i in range(N + 1):
+                t_row = list(map(int, content[N + 1 + i].split()))
+                if len(t_row) != N + 1:
+                    raise ValueError("Travel time matrix row size mismatch.")
+                t.append(t_row)
+
+            return N, e, l, d, t
+
+    except FileNotFoundError:
+        print(f"Error: The file '{filename}' was not found.")
+        return None
+    except ValueError as ve:
+        print(f"Value Error: {ve}")
+        return None
+    except Exception as ex:
+        print(f"An unknown error occurred: {ex}")
+        return None
+
+if len(sys.argv) > 1:
+    n, e, l, d, t = read_input_from_file(sys.argv[1])
+else:
+    n, e, l, d, t = read_input_file()
 
 # Precalculate the variables necessary for the calculation of the heuristic values
 lambda_t, lambda_l, lambda_e = 0.75, 0.1, 0.15
@@ -65,11 +117,11 @@ def Calculate(path:List[int]):
     for i in range (0, n):
         total_time += t[cur_pos][path[i]]
         travel_time += t[cur_pos][path[i]]
-        if total_time <= l[path[i]-1]:   
+        if total_time <= l[path[i]-1]:
             total_time = max(total_time, e[path[i]-1])
             total_time += d[path[i]-1]
             cur_pos = path[i]
-        else: 
+        else:
             return BIG_COST
     return travel_time
 
@@ -112,10 +164,10 @@ def LocalSearch(start_path:List[int], enhancement:bool=False, allowed_time:int=N
     optimal_path = start_path
     cur_MIN = Calculate(start_path)
 
-    while len(tabu) > 0: 
+    while len(tabu) > 0:
         element = tabu.popleft()  # This pops the first inserted item
         if element[0] <= depth:
-            cur_best_element = [] 
+            cur_best_element = []
             found_better = False
             for i in range (0, n - 1):
                 for j in range (i + 1, min(i + vertex_check, n)):
@@ -124,7 +176,7 @@ def LocalSearch(start_path:List[int], enhancement:bool=False, allowed_time:int=N
                     # travel_time = Calculate(try_path)
                     # if travel_time < cur_MIN:
                     if lex_compare(try_path, optimal_path):
-                        found_better = True 
+                        found_better = True
                         cur_best_element = []
                         cur_best_element.append((0, try_path[:]))
                         optimal_path = try_path[:]
@@ -138,7 +190,7 @@ def LocalSearch(start_path:List[int], enhancement:bool=False, allowed_time:int=N
                         cur_best_element.append((0, try_path))
                     else: cur_best_element.append((element[0] + 1, try_path))
                     time_passed = time.time() - time_since_best
-                    if time_passed > accepted_delay or (allowed_time != None and time.time() - start_time > allowed_time): 
+                    if time_passed > accepted_delay or (allowed_time != None and time.time() - start_time > allowed_time):
                         break
             if found_better == True and len(cur_best_element) > 0:
                 tabu.clear()
@@ -150,7 +202,7 @@ def LocalSearch(start_path:List[int], enhancement:bool=False, allowed_time:int=N
                     tabu.popleft()
             # print(cur_MIN)
         time_passed = time.time() - time_since_best
-        if time_passed > accepted_delay or (allowed_time != None and time.time() - start_time > allowed_time): 
+        if time_passed > accepted_delay or (allowed_time != None and time.time() - start_time > allowed_time):
             break
     return optimal_path
 
@@ -225,7 +277,7 @@ class Tree:
         self.N_s = N_s
         self.q0 = q0
         self.strict = True # This guarantee any path generated doesn't violate time constraints. If every path found after expansion violates time window constraints, then this will automatically be set to False
-    
+
     def reset_leaves(self): # Reset the children and extensions of leaves to save memory, else the program will crash with n >= 100
         for leave in self.leaves:
             leave.Children = []
@@ -295,7 +347,7 @@ class BeamSolver:
         self.solver_tree.leaves.sort()
         for leave in self.solver_tree.leaves:
             self.found_paths.append(path_from_leave(leave))
-        
+
 def ApplyPheromoneUpdate(good_paths:List[List], weights:List[float]=None, ro:float=0.1):
     if weights == None:
         weights = [1/len(good_paths) for _ in range(len(good_paths))]
@@ -338,7 +390,7 @@ class ACOSolver:
         self.K_iter = K_iter
         self.K_restart = K_restart
         self.K_bf = K_bf
-        
+
     def setSolutionTime(self, solution_time:int):
         assert solution_time > 0 and solution_time <= 300
         self.solution_time = solution_time
@@ -396,4 +448,3 @@ print(n)
 print(*ACO.best_path)
 # print(Calculate(ACO.best_path))
 # print(ACO.time_best_path)
-

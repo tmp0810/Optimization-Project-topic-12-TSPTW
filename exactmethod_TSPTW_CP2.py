@@ -1,5 +1,6 @@
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
+import sys
 
 # Hàm tạo dữ liệu đầu vào
 def create_data_model():
@@ -25,6 +26,59 @@ def create_data_model():
     data["depot"] = 0  # Nút bắt đầu (depot)
     return N, data
 
+def read_input_from_file(filename='TSPTW_test_1.txt'):
+    '''
+    Reads input data for the OR-Tools based TSPTW problem from a file.
+    Returns:
+        + n: Number of locations (excluding the depot).
+        + data: Dictionary containing time windows, time matrix, number of vehicles, and depot index.
+    '''
+    try:
+        with open(filename, 'r') as file_handle:
+            # Read all lines from the file and strip whitespace
+            content = [line.strip() for line in file_handle.readlines() if line.strip()]
+
+            # Ensure there is at least one line for the number of points
+            if not content:
+                raise ValueError("Input file is empty or not formatted correctly.")
+
+            # Read the number of locations (N)
+            n = int(content[0])
+
+            # Initialize data dictionary
+            data = {
+                "time_windows": [(0, 0)],  # Time window for the depot
+                "time_matrix": [],
+                "num_vehicles": 1,  # Number of vehicles
+                "depot": 0  # Depot index
+            }
+
+            # Read time windows and service times for each location
+            d_list = [0]  # Service times, starting with 0 for the depot
+            for i in range(1, n + 1):
+                e, l, d = map(int, content[i].split())
+                data["time_windows"].append((e, l))  # Add time window
+                d_list.append(d)  # Add service time
+
+            # Read travel time matrix
+            for i in range(n + 1):
+                line = list(map(int, content[n + 1 + i].split()))
+                # Adjust travel time to include service time
+                adjusted_line = [line[j] + d_list[i] if j != i else 0 for j in range(n + 1)]
+                data["time_matrix"].append(adjusted_line)
+
+            return n, data
+
+    except FileNotFoundError:
+        print(f"Error: The file '{filename}' was not found.")
+        return None, None
+    except ValueError as ve:
+        print(f"Value Error: {ve}")
+        return None, None
+    except Exception as ex:
+        print(f"An unknown error occurred: {ex}")
+        return None, None
+
 # Hàm in kết quả
 def print_solution(N, data, manager, routing, solution):
     print(N)  # In số lượng nút
@@ -41,7 +95,10 @@ def print_solution(N, data, manager, routing, solution):
 
 # Hàm chính
 def main():
-    N, data = create_data_model()  # Tạo dữ liệu đầu vào
+    if len(sys.argv) > 1:
+        N, data = read_input_from_file(sys.argv[1])
+    else:
+        N, data = create_data_model()
 
     # Tạo đối tượng quản lý chỉ số
     manager = pywrapcp.RoutingIndexManager(

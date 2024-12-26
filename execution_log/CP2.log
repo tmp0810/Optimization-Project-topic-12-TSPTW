@@ -1,0 +1,78 @@
+TSPTW(CP 2nd way).py result for test 10_1.txt:
+10
+1 7 9 4 2 6 5 8 3 10 
+Time elapsed: 0.1021067 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 10_2.txt:
+10
+2 6 5 4 7 10 8 9 3 1 
+Time elapsed: 0.0892669 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 10_3.txt:
+10
+10 4 5 1 3 6 8 2 9 7 
+Time elapsed: 0.1021763 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 150_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0243663 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 150_2.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0286511 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 20_1.txt:
+20
+9 16 3 18 8 7 12 6 14 1 20 5 19 2 15 11 17 10 13 4 
+Time elapsed: 24.4252033 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 20_2.txt:
+20
+18 5 1 4 17 7 9 6 2 10 3 14 20 8 15 16 12 13 11 19 
+Time elapsed: 45.8779425 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 20_3.txt:
+20
+4 3 5 14 17 6 12 8 1 9 2 7 11 19 16 13 10 18 15 20 
+Time elapsed: 20.4201465 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 250_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0228164 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 250_2.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.02295 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 300_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0153879 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 300_2.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0257894 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 30_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0211059 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 30_2.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0223424 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 30_3.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0118558 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 500_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0152031 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 500_2.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.0179525 seconds
+----------------------------------------
+TSPTW(CP 2nd way).py result for test 70_1.txt:
+Execution terminated: exceeded 180 seconds timeout.
+Time elapsed: 180.021647 seconds
+----------------------------------------
